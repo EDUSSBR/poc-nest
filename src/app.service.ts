@@ -54,4 +54,37 @@ export class AppService {
           tweet: tweet.getTweet(),
         }));
   }
+  getTweetsByUserName(username: string, page: string) {
+    const noPageSent = page === undefined;
+    const pageValue = parseInt(page);
+    const invalidPageNumber = !(pageValue >= 1 || noPageSent);
+    if (invalidPageNumber) {
+      throw new BadRequestException('Informe uma página válida!');
+    }
+    let initialIndex;
+    let finalIndex;
+
+    if (!noPageSent) {
+      initialIndex = (pageValue - 1) * 15;
+      finalIndex = pageValue * 15;
+    }
+    const reversedTweets = [...tweets].reverse();
+    return noPageSent || pageValue === 1
+      ? reversedTweets
+          .filter((tweet) => tweet.getUser().is(username))
+          .slice(0, 15)
+          .map((tweet) => ({
+            avatar: tweet.getUser().getAvatar(),
+            username: tweet.getUser().getUsername(),
+            tweet: tweet.getTweet(),
+          }))
+      : reversedTweets
+          .filter((tweet) => tweet.getUser().is(username))
+          .slice(initialIndex, finalIndex)
+          .map((tweet) => ({
+            avatar: tweet.getUser().getAvatar(),
+            username: tweet.getUser().getUsername(),
+            tweet: tweet.getTweet(),
+          }));
+  }
 }
