@@ -1,7 +1,8 @@
-import { Body, Controller, Get, HttpCode, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post, Query } from '@nestjs/common';
 import { AppService } from './app.service';
 import { CreateUserDTO } from './dtos/create.user.dto';
 import { CreateTweetDTO } from './dtos/create.tweet.dto';
+import { Tweet } from './entities/Tweet';
 
 @Controller()
 export class AppController {
@@ -15,6 +16,12 @@ export class AppController {
   @Post('/tweets')
   createTweet(@Body() body: CreateTweetDTO) {
     this.appService.createTweets(body);
+  }
+  @Get('/tweets')
+  getTweets(
+    @Query('page') page: string,
+  ): Omit<Tweet, 'user'> | { username: string }[] {
+    return this.appService.getTweets(page);
   }
   @Get('/')
   getHealth(): string {
